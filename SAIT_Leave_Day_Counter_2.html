@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAIT MAT Leave Day Counter</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --red: #A6192E;
+    --red-dark: #7a1222;
+    --red-light: #f9eaec;
+    --grey-50: #f8f8f8;
+    --grey-100: #f0f0f0;
+    --grey-200: #e0e0e0;
+    --grey-400: #9e9e9e;
+    --grey-700: #424242;
+    --grey-900: #1a1a1a;
+    --white: #ffffff;
+    --green: #2e7d32;
+    --green-light: #e8f5e9;
+    --amber: #e65100;
+    --amber-light: #fff3e0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--grey-50);
+    color: var(--grey-900);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--red);
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(166,25,46,0.3);
+  }
+
+  .sait-logo {
+    width: 44px;
+    height: 44px;
+    background: white;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--red);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+
+  header p {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-top: 2px;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 40px auto;
+    padding: 0 20px;
+    flex: 1;
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .card-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--grey-100);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-header .icon {
+    width: 32px;
+    height: 32px;
+    background: var(--red-light);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .card-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--grey-900);
+  }
+
+  .card-header p {
+    font-size: 12px;
+    color: var(--grey-400);
+    margin-top: 1px;
+  }
+
+  .card-body { padding: 24px; }
+
+  .tab-group {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: var(--grey-100);
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--grey-400);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .tab.active {
+    background: white;
+    color: var(--red);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--grey-700);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  input[type="date"], input[type="text"], select {
+    padding: 10px 12px;
+    border: 1.5px solid var(--grey-200);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--grey-900);
+    background: white;
+    transition: border-color 0.15s;
+    outline: none;
+    width: 100%;
+  }
+
+  input[type="date"]:focus, input[type="text"]:focus, select:focus {
+    border-color: var(--red);
+  }
+
+  .dates-individual {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .date-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .date-row input { flex: 1; }
+
+  .btn-remove {
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid var(--grey-200);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--grey-400);
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .btn-remove:hover { border-color: var(--red); color: var(--red); }
+
+  .btn-add-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1.5px dashed var(--grey-200);
+    background: transparent;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--grey-400);
+    cursor: pointer;
+    transition: all 0.15s;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .btn-add-date:hover { border-color: var(--red); color: var(--red); }
+
+  .btn-calculate {
+    width: 100%;
+    padding: 12px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 8px;
+  }
+
+  .btn-calculate:hover { background: var(--red-dark); }
+
+  .result-box {
+    display: none;
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1.5px solid var(--grey-200);
+  }
+
+  .result-box.show { display: block; }
+
+  .result-header {
+    padding: 14px 20px;
+    background: var(--grey-50);
+    border-bottom: 1px solid var(--grey-200);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--grey-400);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .result-body { padding: 20px; }
+
+  .result-count {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .result-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--red);
+    line-height: 1;
+  }
+
+  .result-label {
+    font-size: 16px;
+    color: var(--grey-700);
+    font-weight: 500;
+  }
+
+  .result-sublabel {
+    font-size: 12px;
+    color: var(--grey-400);
+    margin-top: 2px;
+  }
+
+  .result-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--grey-100);
+  }
+
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+  }
+
+  .breakdown-label { color: var(--grey-400); }
+
+  .breakdown-value {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: var(--grey-700);
+  }
+
+  .breakdown-value.excluded { color: var(--grey-400); text-decoration: line-through; }
+
+  .working-days-list {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--grey-100);
+  }
+
+  .working-days-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--grey-400);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 10px;
+  }
+
+  .day-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .day-chip {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .day-chip.working {
+    background: var(--green-light);
+    color: var(--green);
+  }
+
+  .day-chip.weekend {
+    background: var(--grey-100);
+    color: var(--grey-400);
+    text-decoration: line-through;
+  }
+
+  .day-chip.holiday {
+    background: var(--amber-light);
+    color: var(--amber);
+    text-decoration: line-through;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--grey-400);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.working { background: var(--green); }
+  .legend-dot.weekend { background: var(--grey-300); }
+  .legend-dot.holiday { background: var(--amber); }
+
+  .form-link-box {
+    background: var(--red-light);
+    border: 1.5px solid rgba(166,25,46,0.15);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .form-link-box p {
+    font-size: 13px;
+    color: var(--red-dark);
+    font-weight: 500;
+  }
+
+  .form-link-box span {
+    font-size: 12px;
+    color: var(--grey-400);
+    margin-top: 2px;
+    display: block;
+  }
+
+  .btn-form {
+    padding: 10px 20px;
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s;
+  }
+
+  .btn-form:hover { background: var(--red-dark); }
+
+  .holiday-note {
+    background: var(--amber-light);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 12px;
+    color: var(--amber);
+    margin-top: 16px;
+    display: none;
+  }
+
+  .holiday-note.show { display: block; }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    color: var(--grey-400);
+  }
+
+  @media (max-width: 480px) {
+    .form-row { grid-template-columns: 1fr; }
+    .result-number { font-size: 36px; }
+    header { padding: 16px 20px; }
+    .card-body { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sait-logo">SAIT</div>
+  <div>
+    <h1>Leave Day Counter</h1>
+    <p>School of Manufacturing & Automation | School of Transportation</p>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon">📅</div>
+      <div>
+        <h2>Calculate Your Working Days</h2>
+        <p>See your exact leave day count before submitting the form</p>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="tab-group">
+        <button class="tab active" onclick="switchTab('range')">Date Range</button>
+        <button class="tab" onclick="switchTab('individual')">Individual Dates</button>
+      </div>
+
+      <!-- Date Range Tab -->
+      <div class="tab-panel active" id="panel-range">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" id="range-start">
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="date" id="range-end">
+          </div>
+        </div>
+        <button class="btn-calculate" onclick="calculateRange()">Calculate Working Days</button>
+
+        <div class="result-box" id="result-range">
+          <div class="result-header">Your Leave Summary</div>
+          <div class="result-body">
+            <div class="result-count">
+              <div class="result-number" id="range-count">0</div>
+              <div>
+                <div class="result-label">working days</div>
+                <div class="result-sublabel">Weekends and SAIT holidays excluded</div>
+              </div>
+            </div>
+            <div class="result-breakdown">
+              <div class="breakdown-row">
+                <span class="breakdown-label">Total calendar days</span>
+                <span class="breakdown-value" id="range-calendar">-</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Weekend days excluded</span>
+                <span class="breakdown-value excluded" id="range-weekends">-</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-label">Holidays excluded</span>
+                <span class="breakdown-value excluded" id="range-holidays">-</span>
+              </div>
+            </div>
+            <div class="working-days-list" id="range-days-list">
+              <div class="working-days-label">Day breakdown</div>
+              <div class="day-chips" id="range-day-chips"></div>
+              <div class="legend">
+                <div class="legend-item"><div class="legend-dot working"></div> Working day</div>
+                <div class="legend-item"><div class="legend-dot weekend"></div> Weekend</div>
+                <div class="legend-item"><div class="legend-dot holiday"></div> Holiday</div>
+              </div>
+            </div>
+            <div class="holiday-note" id="range-holiday-note"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Individual Dates Tab -->
+      <div class="tab-panel" id="panel-individual">
+        <div class="dates-individual" id="individual-dates">
+          <div class="date-row">
+            <input type="date" class="ind-date">
+            <button class="btn-remove" onclick="removeDate(this)">×</button>
+          </div>
+        </div>
+        <button class="btn-add-date" onclick="addDate()">+ Add another date</button>
+        <button class="btn-calculate" onclick="calculateIndividual()" style="margin-top: 16px;">Calculate Working Days</button>
+
+        <div class="result-box" id="result-individual">
+          <div class="result-header">Your Leave Summary</div>
+          <div class="result-body">
+            <div class="result-count">
+              <div class="result-number" id="individual-count">0</div>
+              <div>
+                <div class="result-label">working days</div>
+                <div class="result-sublabel">Weekends and SAIT holidays excluded</div>
+              </div>
+            </div>
+            <div class="working-days-list">
+              <div class="working-days-label">Selected dates</div>
+              <div class="day-chips" id="individual-day-chips"></div>
+              <div class="legend">
+                <div class="legend-item"><div class="legend-dot working"></div> Working day</div>
+                <div class="legend-item"><div class="legend-dot weekend"></div> Weekend (not counted)</div>
+                <div class="legend-item"><div class="legend-dot holiday"></div> Holiday (not counted)</div>
+              </div>
+            </div>
+            <div class="holiday-note" id="individual-holiday-note"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon">📝</div>
+      <div>
+        <h2>Ready to Submit?</h2>
+        <p>Once you know your day count, go ahead and submit your leave request</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="form-link-box">
+        <div>
+          <p>Submit your official leave request</p>
+          <span>Your request will be sent to your manager for approval</span>
+        </div>
+        <a class="btn-form" href="https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=gyEv9Wef0kq2Vm91T-GWy-yJkrTJtclDj_PkrHHH_ghUNzdCSTZXTkczSjRCVFZPSkk3VkIxUzNLSSQlQCN0PWcu" target="_blank">Open Form</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  SAIT School of Manufacturing & Automation | School of Transportation &nbsp;·&nbsp; Leave Day Counter Tool
+</footer>
+
+<script>
+  // SAIT Observed Holidays 2025 and 2026
+  const HOLIDAYS = new Set([
+    '2025-01-01', '2025-02-17', '2025-04-18', '2025-04-21',
+    '2025-05-19', '2025-07-01', '2025-08-04', '2025-09-01',
+    '2025-09-30', '2025-10-13', '2025-11-11', '2025-12-25',
+    '2026-01-01', '2026-02-16', '2026-04-03', '2026-04-06',
+    '2026-05-18', '2026-07-01', '2026-08-03', '2026-09-07',
+    '2026-09-30', '2026-10-12', '2026-11-11', '2026-12-25'
+  ]);
+
+  const HOLIDAY_NAMES = {
+    '2025-01-01': "New Year's Day", '2025-02-17': 'Family Day',
+    '2025-04-18': 'Good Friday', '2025-04-21': 'Easter Monday',
+    '2025-05-19': 'Victoria Day', '2025-07-01': 'Canada Day',
+    '2025-08-04': 'Heritage Day', '2025-09-01': 'Labour Day',
+    '2025-09-30': 'Truth & Reconciliation Day', '2025-10-13': 'Thanksgiving',
+    '2025-11-11': 'Remembrance Day', '2025-12-25': 'Christmas Day',
+    '2026-01-01': "New Year's Day", '2026-02-16': 'Family Day',
+    '2026-04-03': 'Good Friday', '2026-04-06': 'Easter Monday',
+    '2026-05-18': 'Victoria Day', '2026-07-01': 'Canada Day',
+    '2026-08-03': 'Heritage Day', '2026-09-07': 'Labour Day',
+    '2026-09-30': 'Truth & Reconciliation Day', '2026-10-12': 'Thanksgiving',
+    '2026-11-11': 'Remembrance Day', '2026-12-25': 'Christmas Day'
+  };
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-CA', { month: 'short', day: 'numeric', weekday: 'short' });
+  }
+
+  function toDateStr(date) {
+    return date.toISOString().split('T')[0];
+  }
+
+  function isWeekend(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.getDay() === 0 || d.getDay() === 6;
+  }
+
+  function isHoliday(dateStr) {
+    return HOLIDAYS.has(dateStr);
+  }
+
+  function isWorkingDay(dateStr) {
+    return !isWeekend(dateStr) && !isHoliday(dateStr);
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+    document.getElementById(`panel-${tab}`).classList.add('active');
+  }
+
+  function addDate() {
+    const container = document.getElementById('individual-dates');
+    const row = document.createElement('div');
+    row.className = 'date-row';
+    row.innerHTML = `<input type="date" class="ind-date"><button class="btn-remove" onclick="removeDate(this)">×</button>`;
+    container.appendChild(row);
+  }
+
+  function removeDate(btn) {
+    const rows = document.querySelectorAll('.date-row');
+    if (rows.length > 1) btn.parentElement.remove();
+  }
+
+  function calculateRange() {
+    const start = document.getElementById('range-start').value;
+    const end = document.getElementById('range-end').value;
+
+    if (!start || !end) { alert('Please select both a start and end date.'); return; }
+    if (start > end) { alert('Start date must be before end date.'); return; }
+
+    const startDate = new Date(start + 'T00:00:00');
+    const endDate = new Date(end + 'T00:00:00');
+    const allDays = [];
+    const current = new Date(startDate);
+
+    while (current <= endDate) {
+      allDays.push(toDateStr(current));
+      current.setDate(current.getDate() + 1);
+    }
+
+    const weekendDays = allDays.filter(d => isWeekend(d));
+    const holidayDays = allDays.filter(d => !isWeekend(d) && isHoliday(d));
+    const workingDays = allDays.filter(d => isWorkingDay(d));
+
+    document.getElementById('range-count').textContent = workingDays.length;
+    document.getElementById('range-calendar').textContent = allDays.length;
+    document.getElementById('range-weekends').textContent = weekendDays.length;
+    document.getElementById('range-holidays').textContent = holidayDays.length;
+
+    const chips = document.getElementById('range-day-chips');
+    chips.innerHTML = allDays.map(d => {
+      if (isWeekend(d)) return `<span class="day-chip weekend">${formatDate(d)}</span>`;
+      if (isHoliday(d)) return `<span class="day-chip holiday">${formatDate(d)}</span>`;
+      return `<span class="day-chip working">${formatDate(d)}</span>`;
+    }).join('');
+
+    const holidayNote = document.getElementById('range-holiday-note');
+    if (holidayDays.length > 0) {
+      const names = holidayDays.map(d => HOLIDAY_NAMES[d] || d).join(', ');
+      holidayNote.textContent = `SAIT holidays excluded: ${names}`;
+      holidayNote.classList.add('show');
+    } else {
+      holidayNote.classList.remove('show');
+    }
+
+    document.getElementById('result-range').classList.add('show');
+  }
+
+  function calculateIndividual() {
+    const inputs = document.querySelectorAll('.ind-date');
+    const dates = Array.from(inputs).map(i => i.value).filter(v => v);
+
+    if (dates.length === 0) { alert('Please select at least one date.'); return; }
+
+    const uniqueDates = [...new Set(dates)].sort();
+    const workingDays = uniqueDates.filter(d => isWorkingDay(d));
+    const weekendDays = uniqueDates.filter(d => isWeekend(d));
+    const holidayDays = uniqueDates.filter(d => !isWeekend(d) && isHoliday(d));
+
+    document.getElementById('individual-count').textContent = workingDays.length;
+
+    const chips = document.getElementById('individual-day-chips');
+    chips.innerHTML = uniqueDates.map(d => {
+      if (isWeekend(d)) return `<span class="day-chip weekend">${formatDate(d)}</span>`;
+      if (isHoliday(d)) return `<span class="day-chip holiday">${formatDate(d)}</span>`;
+      return `<span class="day-chip working">${formatDate(d)}</span>`;
+    }).join('');
+
+    const holidayNote = document.getElementById('individual-holiday-note');
+    if (holidayDays.length > 0) {
+      const names = holidayDays.map(d => HOLIDAY_NAMES[d] || d).join(', ');
+      holidayNote.textContent = `SAIT holidays excluded: ${names}`;
+      holidayNote.classList.add('show');
+    } else {
+      holidayNote.classList.remove('show');
+    }
+
+    document.getElementById('result-individual').classList.add('show');
+  }
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('range-start').min = today;
+  document.getElementById('range-end').min = today;
+</script>
+</body>
+</html>
